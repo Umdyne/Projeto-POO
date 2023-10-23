@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="logo">
+    <file>natec logo png.png</file>
+  </qresource>
+  <qresource prefix="logofull">
+    <file>natec logo.png</file>
+    <file>natec logo2.png</file>
+  </qresource>
+  <qresource prefix="pato">
+    <file>patogirando.gif</file>
+  </qresource>
+  <qresource prefix="logomini">
+    <file>natec logo mini.png</file>
+  </qresource>
+</RCC>
