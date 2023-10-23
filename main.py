@@ -119,6 +119,7 @@ class Main(QMainWindow, Ui_Main):
     
 
 if __name__ == '__main__':
+    print("")
     app = QApplication(sys.argv)
     show_main = Main()
     sys.exit(app.exec_())
