@@ -65,11 +65,11 @@ class Main(QMainWindow, Ui_Main):
         senha = self.tela_cadastro.caixa_senha.text()
         user = self.tela_cadastro.caixa_usuario.text()
         if not(nome == '' or email == '' or senha == '' or user == ''):
-            if self.cad.checkUser(user):
+            if self.cad.cadastrado(user):
                 QMessageBox.information(None,'POOII', 'Nome de usuário já cadastrado!')
                 self.tela_cadastro.caixa_usuario.setText('')
             else:
-                usuario = Usuario(nome, email, senha, user)
+                usuario = Usuario(nome, user, senha, email)
                 self.cad.cadastrar(usuario)
                 QMessageBox.information(None,'POOII', 'Cadastro realizado com sucesso!')
                 self.tela_cadastro.caixa_email.setText('')
@@ -119,7 +119,6 @@ class Main(QMainWindow, Ui_Main):
     
 
 if __name__ == '__main__':
-    print("")
     app = QApplication(sys.argv)
     show_main = Main()
     sys.exit(app.exec_())
