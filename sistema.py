@@ -1,4 +1,3 @@
-
 class Sistema:
     __slot__ = ['_usuarios']
 
@@ -9,12 +8,10 @@ class Sistema:
     def cadastrar(self, usuario):
         for pessoa in self._usuarios:
             if usuario.user == pessoa.user:
-                print(usuario.user,"==",pessoa.user)
-                return False
+                return False 
+        print(len(self._usuarios))
         self._usuarios.append(usuario)
-        print("")
-        for n in self._usuarios:
-            print(n.nome , n.user , n.email , n.senha)
+        print(f'nome: {usuario.nome}, user: {usuario.user}, email: {usuario.email}, senha: {usuario.senha}')
         return True
 
     def cadastrado(self, user):
@@ -23,26 +20,24 @@ class Sistema:
                 return True
         return False
     
-    # def validationLogin(self, user, password):
-    #     if self.checkUser(user):
-    #         if self.checkPassword(password):
-    #             return True
 
-    #     return False   
-    
-    
     def checkUser(self, user):
         for curr in self._usuarios:
             if curr.user == user:
+                print(user, '==', curr.user)
+                return False
+        
+        return True
+    
+    def checkPassword(self, user, userpassword):
+        print('checkpassword')
+        print(f'teste: user: {user}, senha: {userpassword}')
+        for user in self._usuarios:
+            print(f'user: {user.user}, senha: {user.senha}')
+            if (user.user == user and user.senha == userpassword):
+                print('if')
+                print(f'usuario {user.user}, user {user}\nsenha {user.senha}, password {userpassword}')
                 return True
         
         return False
     
-    def checkPassword(self, user, userpassword):
-        for curr in self._usuarios:
-            if curr.user == user and curr.senha == userpassword:
-                return True
-            
-        
-        return False
-        
