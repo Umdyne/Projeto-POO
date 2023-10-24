@@ -3,12 +3,13 @@ import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication, QMessageBox
 
-from telaCadastro import Tela_Cadastro
-from telaLogin import Tela_Login
-from telaInicial import Tela_Inicial
-from telaLoginRealizado import Login_Realizado
+from tela_cadastro import Tela_Cadastro
+from tela_inicial import Tela_Inicial
 from sistema import Sistema
-from Usuario import Usuario
+from usuario import Usuario
+from mensagens import Mensagens
+from tela_principal import Tela_Principal
+from tela_perfil import Tela_Perfil
 
 class Ui_Main(QtWidgets.QWidget):
     def setupUi(self, Main):
@@ -21,6 +22,7 @@ class Ui_Main(QtWidgets.QWidget):
         self.stack1 = QtWidgets.QMainWindow()
         self.stack2 = QtWidgets.QMainWindow()
         self.stack3 = QtWidgets.QMainWindow()
+        self.stack4 = QtWidgets.QMainWindow()
 
         self.tela_inicial = Tela_Inicial()
         self.tela_inicial.setupUi(self.stack0)
@@ -28,36 +30,42 @@ class Ui_Main(QtWidgets.QWidget):
         self.tela_cadastro = Tela_Cadastro()
         self.tela_cadastro.setupUi(self.stack1)
 
-        self.tela_login = Tela_Login()
-        self.tela_login.setupUi(self.stack2)
+        self.tela_principal = Tela_Principal()
+        self.tela_principal.setupUi(self.stack3)
 
-        self.dentro = Login_Realizado()
-        self.dentro.setupUi(self.stack3)
+        self.tela_perfil = Tela_Perfil()
+        self.tela_perfil.setupUi(self.stack4)
 
         self.QtStack.addWidget(self.stack0)
         self.QtStack.addWidget(self.stack1)
         self.QtStack.addWidget(self.stack2)
         self.QtStack.addWidget(self.stack3)
+        self.QtStack.addWidget(self.stack4)
 
 
 class Main(QMainWindow, Ui_Main):
     def __init__(self):
         super(Main, self).__init__(None)
         self.setupUi(self)
-
+        
 
         self.cad = Sistema()
-        self.tela_inicial.Botao_Cadastro.clicked.connect(self.abrirTelaCadastro) # funções dos botões da tela principal
-        self.tela_inicial.Botao_Login.clicked.connect(self.abrirTelaLogin)
+        self.tela_inicial.botao_ir_cadastro.clicked.connect(self.abrirTelaCadastro) # funções dos botões da tela principal
+        # self.tela_inicial.Botao_Login.clicked.connect(self.abrirTelaLogin)
+        self.tela_inicial.botao_logar.clicked.connect(self.logar)
 
-        self.tela_cadastro.Botao_cadastrar.clicked.connect(self.botaoCadastra)
-        self.tela_cadastro.Botao_Voltar.clicked.connect(self.voltarCadastro)
-        self.tela_login.Botao_Entrar.clicked.connect(self.logar)
-        self.tela_inicial.Botao_Sair.clicked.connect(QtWidgets.qApp.quit)
+        self.tela_cadastro.botao_ir_cadastro.clicked.connect(self.botaoCadastra)
+        self.tela_cadastro.botao_sair.clicked.connect(self.voltarCadastro)
+        
+        self.tela_principal.botao_perfil.clicked.connect(self.abrirPerfil)
+        self.tela_cadastro.botao_sair.clicked.connect(self.voltarCadastro)
 
-        self.dentro.Botao_Sair.clicked.connect(self.sairSistema)
-        self.tela_cadastro.Botao_Voltar.clicked.connect(self.voltarCadastro)
-        self.tela_login.Botao_Voltar.clicked.connect(self.voltarLogin)
+        self.tela_principal.botao_postar.clicked.connect(self.postar)
+
+        self.tela_perfil.botao_inicio.clicked.connect(self.abrirTelaPrincipal)
+        self.tela_perfil.botao_sair.clicked.connect(self.abrirTelaInicial)
+        
+        self.tela_inicial.botao_sair.clicked.connect(QtWidgets.qApp.quit)
 
     def botaoCadastra(self):
         nome = self.tela_cadastro.caixa_nome.text()
@@ -80,20 +88,37 @@ class Main(QMainWindow, Ui_Main):
         else:
             QMessageBox.information(None,'POOII', 'Todos os valores devem ser preenchidos!')
 
-        # self.QtStack.setCurrentIndex(0)
+    
     
     def logar(self):
-        user = self.tela_login.caixa_usuario.text()
-        senha = self.tela_login.caixa_senha.text()
-        if self.cad.checkPassword(user, senha):
+        user = self.tela_inicial.caixa_usuario.text()
+        senha = self.tela_inicial.caixa_senha.text()
+        usuario = self.cad.checkPassword(user, senha)
+        if usuario != False:
             self.QtStack.setCurrentIndex(3)
+            self.tela_perfil.Nome.setText(usuario.user)
+            self.tela_perfil.Email.setText(usuario.email)
         else:
             QMessageBox.information(None,'POOII', 'Login ou senha errados!')
-            self.tela_login.caixa_senha.setText('')
-            self.tela_login.caixa_usuario.setText('')
+            self.tela_inicial.caixa_senha.setText('')
+            self.tela_inicial.caixa_usuario.setText('')
         
-    
+    def postar(self):
+        post = self.tela_principal.texto_postar.toPlainText()
+        QMessageBox.information(None,'POOII', 'Mensagem Postada!')
+        usuario = self.tela_perfil.Nome.text()
+        m = Mensagens(post, usuario)
+        print(f'{m._mensagem}, {m._perfil}, {m._data}')
+        self.tela_principal.texto_postar.setText('')
+        pass
 
+    def abrirPerfil(self):
+        self.QtStack.setCurrentIndex(4)
+        self.tela_inicial.caixa_senha.setText('')
+    
+    def abrirTelaInicial(self):
+        self.QtStack.setCurrentIndex(0)
+    
     def abrirTelaCadastro(self):
         self.QtStack.setCurrentIndex(1)
 
@@ -102,6 +127,9 @@ class Main(QMainWindow, Ui_Main):
     
     def sairSistema(self):
         self.QtStack.setCurrentIndex(0)
+    
+    def abrirTelaPrincipal(self):
+        self.QtStack.setCurrentIndex(3)
     
     def voltarCadastro(self):
         self.QtStack.setCurrentIndex(0)
@@ -112,8 +140,8 @@ class Main(QMainWindow, Ui_Main):
     
     def voltarLogin(self):
         self.QtStack.setCurrentIndex(0)
-        self.tela_login.caixa_senha.setText('')
-        self.tela_login.caixa_usuario.setText('')
+        self.tela_inicial.caixa_senha.setText('')
+        self.tela_inicial.caixa_usuario.setText('')
     
     
     
